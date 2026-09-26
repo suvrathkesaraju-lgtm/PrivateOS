@@ -10,3 +10,6 @@ In order to test it out use the [Github Pages](https://suvrathkesaraju-lgtm.gith
 - features an  audio player that lets you select a local audio file and play it!
 
 It works by using divs to create windows which have a defined structure in css and each app has its own backend in script.js. For example the notes app converts the written text in the text area into a .txt file then creates a temporary url for the txt file and after the user downloads the file that temporary download URL is deleted.
+
+Credits:
+Mr.Mads on Magnific for the icons from his free downloads (https://www.magnific.com/author/mrmads)

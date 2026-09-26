@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Music Player</title>
+<style>
+  :root {
+    --bg: #121212;
+    --card: #1e1e1e;
+    --accent: #1db954;
+    --text: #f2f2f2;
+    --muted: #9a9a9a;
+    color-scheme: dark light;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #f4f4f4;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --muted: #666;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .player {
+    width: 100%;
+    max-width: 420px;
+    background: var(--card);
+    border-radius: 16px;
+    padding: 28px 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  }
+  .filename {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text);
+  }
+  input[type="file"] {
+    display: block;
+    margin: 0 auto 20px;
+    color: var(--muted);
+    font-size: 13px;
+    max-width: 100%;
+  }
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .time {
+    font-size: 12px;
+    color: var(--muted);
+    min-width: 40px;
+    font-variant-numeric: tabular-nums;
+  }
+  .time.left { text-align: right; }
+  .time.right { text-align: left; }
+  input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 5px;
+    border-radius: 3px;
+    background: linear-gradient(to right, var(--accent) 0%, var(--accent) 0%, #555 0%, #555 100%);
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: none;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: none;
+  }
+  .controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  button {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+</style>
+</head>
+<body>
+
+<div class="player">
+  <div class="filename" id="filename">No file selected</div>
+  <input type="file" id="fileInput" accept="audio/*">
+
+  <div class="bar-row">
+    <span class="time left" id="currentTime">0:00</span>
+    <input type="range" id="seekBar" value="0" min="0" max="100" step="0.1">
+    <span class="time right" id="remainingTime">0:00</span>
+  </div>
+
+  <div class="controls">
+    <button id="playBtn" disabled>▶</button>
+  </div>
+</div>
+
+<audio id="audio"></audio>
+
+<script>
+  const fileInput = document.getElementById('fileInput');
+  const filenameEl = document.getElementById('filename');
+  const audio = document.getElementById('audio');
+  const seekBar = document.getElementById('seekBar');
+  const currentTimeEl = document.getElementById('currentTime');
+  const remainingTimeEl = document.getElementById('remainingTime');
+  const playBtn = document.getElementById('playBtn');
+
+  let objectUrl = null;
+
+  function formatTime(sec) {
+    if (!isFinite(sec) || sec < 0) sec = 0;
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return m + ':' + String(s).padStart(2, '0');
+  }
+
+  function updateSeekBarFill() {
+    const pct = seekBar.max > 0 ? (seekBar.value / seekBar.max) * 100 : 0;
+    seekBar.style.background = `linear-gradient(to right, var(--accent) ${pct}%, #555 ${pct}%)`;
+  }
+
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (objectUrl) URL.revokeObjectURL(objectUrl);
+    objectUrl = URL.createObjectURL(file);
+    audio.src = objectUrl;
+    filenameEl.textContent = file.name;
+    playBtn.disabled = false;
+    playBtn.textContent = '▶';
+  });
+
+  audio.addEventListener('loadedmetadata', () => {
+    seekBar.max = audio.duration;
+    seekBar.value = 0;
+    currentTimeEl.textContent = formatTime(0);
+    remainingTimeEl.textContent = '-' + formatTime(audio.duration);
+    updateSeekBarFill();
+  });
+
+  audio.addEventListener('timeupdate', () => {
+    if (!seekBar.matches(':active')) {
+      seekBar.value = audio.currentTime;
+    }
+    currentTimeEl.textContent = formatTime(audio.currentTime);
+    remainingTimeEl.textContent = '-' + formatTime(audio.duration - audio.currentTime);
+    updateSeekBarFill();
+  });
+
+  audio.addEventListener('ended', () => {
+    playBtn.textContent = '▶';
+  });
+
+  seekBar.addEventListener('input', () => {
+    audio.currentTime = seekBar.value;
+    currentTimeEl.textContent = formatTime(seekBar.value);
+    remainingTimeEl.textContent = '-' + formatTime(audio.duration - seekBar.value);
+    updateSeekBarFill();
+  });
+
+  playBtn.addEventListener('click', () => {
+    if (audio.paused) {
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => { playBtn.textContent = '⏸'; })
+          .catch((err) => {
+            console.error('Playback failed:', err);
+            filenameEl.textContent = 'Playback error: ' + err.message;
+          });
+      } else {
+        playBtn.textContent = '⏸';
+      }
+    } else {
+      audio.pause();
+      playBtn.textContent = '▶';
+    }
+  });
+
+  audio.addEventListener('error', () => {
+    const err = audio.error;
+    let msg = 'Unknown audio error';
+    if (err) {
+      const codes = {1:'Aborted',2:'Network error',3:'Decode error - unsupported file',4:'Source not supported'};
+      msg = codes[err.code] || msg;
+    }
+    filenameEl.textContent = 'Error: ' + msg;
+    console.error('Audio error:', err);
+  });
+</script>
+
+</body>
+</html>

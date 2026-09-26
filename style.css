@@ -1,3 +1,6 @@
+:root {
+    --accent: #1db954;
+}
 .backdrop {
     background-image: url(bg.jpg);
     background-size: cover;
@@ -78,6 +81,7 @@
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+    display: none;
 }
 .window-header {
     border-color: black;
@@ -146,3 +150,97 @@
 html::-webkit-scrollbar {
   display: none;
 }
+.filename {
+    font-size: 15px;
+    color: #fff;
+    font-family: 'jetbrains-mono', monospace;
+    position: absolute;
+    transform: translate(-50%,-50%);
+    left: 50%;
+    top: 30%;
+}
+.file-selector {
+    color: transparent;
+    background-color: #1d1d1dCC;
+    box-shadow: none;
+    border: none;
+    width: 100%;
+    corner-shape: squircle;
+    height: 50px;
+    position: absolute;
+    left: 0%;
+    bottom: 0%;
+    border-radius: 0px 0px 40px 40px;
+    box-sizing: border-box;
+    text-align: center;
+}
+.file-selector::file-selector-button {
+    display: none;
+}
+.playbar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 80%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
+    color: #FFF;
+    font-family: 'jetbrains-mono', monospace;
+}
+.time-bar {
+    font-size: 12px;
+}
+input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 5px;
+    border-radius: 3px;
+    background: linear-gradient(to right, var(--accent) 0%, var(--accent) 0%, #555 0%, #555 100%);
+    outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: none;
+}
+input[type="range"]::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: none;
+}
+.controls {
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    transform: translate(-50%, 0%);
+    left: 50%;
+    bottom: 60px;
+}
+button {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+  button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+

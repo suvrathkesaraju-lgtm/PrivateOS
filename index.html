@@ -17,7 +17,21 @@
             <div id="Time" class="time"><span id="clock">Time</span></div>
             <div id="battery" class="battery"><span id="battery-level">100%</span></div>
         </div>
+        <div id="notes" class="window">
+            <div id="notesHeader" class="window-header">
+                <div class="closeButton" onclick="closeWindow('#notes')"></div>
+            </div>
+            <div class="form">
+                <textarea class="notes-form" id="notes-form" placeholder="Type notes here..." required></textarea>
+                <div class="button-note-submit" onclick="downloadNote()"><p class="submit-text">Save Note</p></div>
+            </div>
+        </div>
+        <div id="appdock" class="appdock">
+            <div class="icons">
+                <img src="./note-icon.png" alt="Notes Icon" class="app-icon-image" onclick="openWindow('#notes')">
+            </div>
 
+        </div>
         <script src="script.js"></script>
     </body>
 
